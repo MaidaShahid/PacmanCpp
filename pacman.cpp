@@ -1,6 +1,3 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <conio.h>
 #include <iostream>
 #include <windows.h>
 
@@ -17,12 +14,17 @@ int pacmanY = 5;
 string ghostDirection = "Right";
 char previous = ' ';
 
+int score = 0;
+
 void movePacmanLeft();
 void movePacmanRight();
 void movePacmanUp();
 void movePacmanDown();
 void moveGhostHorizontal();
 void printMaze();
+void addScore();
+void printScore();
+
 
 int main()
 {
@@ -35,6 +37,7 @@ int main()
     cout << "P";
     while (gameRunning)
     {
+        printScore();
         if (GetAsyncKeyState(VK_LEFT))
         {
             movePacmanLeft();
@@ -71,6 +74,11 @@ void movePacmanUp()
         pacmanY = pacmanY - 1;
         gotoxy(pacmanX, pacmanY);
         cout << "P";
+
+        if(next == '.')
+        {
+            addScore();
+        }
     }
 }
 void movePacmanDown()
@@ -83,6 +91,11 @@ void movePacmanDown()
         pacmanY = pacmanY + 1;
         gotoxy(pacmanX, pacmanY);
         cout << "P";
+
+        if(next == '.')
+        {
+            addScore();
+        }
     }
 }
 
@@ -96,6 +109,11 @@ void movePacmanRight()
         pacmanX = pacmanX + 1;
         gotoxy(pacmanX, pacmanY);
         cout << "P";
+
+        if(next == '.')
+        {
+            addScore();
+        }
     }
 }
 void movePacmanLeft()
@@ -108,6 +126,11 @@ void movePacmanLeft()
         pacmanX = pacmanX - 1;
         gotoxy(pacmanX, pacmanY);
         cout << "P";
+
+        if(next == '.')
+        {
+            addScore();
+        }
     }
 }
 
@@ -180,4 +203,16 @@ char getCharAtxy(short int x, short int y)
     coordBufSize.X = 1;
     coordBufSize.Y = 1;
     return ReadConsoleOutput(GetStdHandle(STD_OUTPUT_HANDLE), &ci, coordBufSize, xy, &rect) ? ci.Char.AsciiChar : ' ';
+}
+
+
+void addScore()
+{
+    score++;
+}
+
+void printScore()
+{
+    gotoxy(30, 5);
+    cout << "Score: " << score;
 }
