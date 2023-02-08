@@ -2,9 +2,9 @@
 #include <windows.h>
 
 using namespace std;
-void gotoxy(short x, short y);
-char getCharAtxy(short int x, short int y);
 
+
+                // Global Variables
 int ghostx = 5;
 int ghosty = 5;
 
@@ -16,6 +16,9 @@ char previous = ' ';
 
 int score = 0;
 
+                // Function Prototypes
+void gotoxy(short x, short y);
+char getCharAtxy(short int x, short int y);
 void movePacmanLeft();
 void movePacmanRight();
 void movePacmanUp();
@@ -24,8 +27,9 @@ void moveGhostHorizontal();
 void printMaze();
 void addScore();
 void printScore();
+bool stopGameIfCollision();
 
-
+                // Function Definitions
 int main()
 {
     system("cls");
@@ -38,6 +42,7 @@ int main()
     while (gameRunning)
     {
         printScore();
+        gameRunning = stopGameIfCollision();
         if (GetAsyncKeyState(VK_LEFT))
         {
             movePacmanLeft();
@@ -215,4 +220,31 @@ void printScore()
 {
     gotoxy(30, 5);
     cout << "Score: " << score;
+}
+
+
+bool stopGameIfCollision()
+{
+    char next;
+    next = getCharAtxy(pacmanX + 1, pacmanY);
+    if(next == 'G')
+    {
+        return false;
+    }
+    next = getCharAtxy(pacmanX - 1, pacmanY);
+    if(next == 'G')
+    {
+        return false;
+    }
+    next = getCharAtxy(pacmanX, pacmanY + 1);
+    if(next == 'G')
+    {
+        return false;
+    }
+    next = getCharAtxy(pacmanX, pacmanY + 1);
+    if(next == 'G')
+    {
+        return false;
+    }
+    return true;
 }
