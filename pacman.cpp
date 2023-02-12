@@ -24,6 +24,8 @@ char horizontalPrevious = ' ';
 
 int score = 0;
 
+int timer = 0;
+
 // Function Prototypes
 void gotoxy(short x, short y);
 char getCharAtxy(short int x, short int y);
@@ -80,8 +82,13 @@ int main()
 
         moveGhostHorizontal();
         moveGhostRandom();
-        moveGhostSmart();
+        if (timer == 3)
+        {
+            moveGhostSmart();
+            timer = 0;
+        }
         Sleep(100);
+        timer++;
     }
 }
 
@@ -152,7 +159,7 @@ void movePacmanLeft()
     }
 }
 
-            // Ememy Movement
+// Ememy Movement
 void moveGhostHorizontal()
 {
 
@@ -315,7 +322,7 @@ void moveGhostSmart()
     }
 }
 
-            // Helper Functions
+// Helper Functions
 void gotoxy(short x, short y)
 {
     HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
