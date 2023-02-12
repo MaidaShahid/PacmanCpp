@@ -3,20 +3,23 @@
 
 using namespace std;
 
-
-                // Global Variables
+// Global Variables
 int ghostx = 5;
 int ghosty = 5;
 
 int pacmanX = 3;
 int pacmanY = 5;
 
+int randomGhostx = 2;
+int randomGhosty = 2;
+char randomPrevious = ' ';
+
 string ghostDirection = "Right";
-char previous = ' ';
+char horizontalPrevious = ' ';
 
 int score = 0;
 
-                // Function Prototypes
+// Function Prototypes
 void gotoxy(short x, short y);
 char getCharAtxy(short int x, short int y);
 void movePacmanLeft();
@@ -24,12 +27,14 @@ void movePacmanRight();
 void movePacmanUp();
 void movePacmanDown();
 void moveGhostHorizontal();
+void moveGhostRandom();
 void printMaze();
 void addScore();
 void printScore();
 bool stopGameIfCollision();
+void pacmanCollisionFoodPallet();
 
-                // Function Definitions
+// Function Definitions
 int main()
 {
     system("cls");
@@ -43,6 +48,7 @@ int main()
     {
         printScore();
         gameRunning = stopGameIfCollision();
+
         if (GetAsyncKeyState(VK_LEFT))
         {
             movePacmanLeft();
@@ -66,9 +72,13 @@ int main()
         }
 
         moveGhostHorizontal();
+        moveGhostRandom();
         Sleep(100);
     }
 }
+
+// Player Movement
+
 void movePacmanUp()
 {
     char next = getCharAtxy(pacmanX, pacmanY - 1);
@@ -79,8 +89,7 @@ void movePacmanUp()
         pacmanY = pacmanY - 1;
         gotoxy(pacmanX, pacmanY);
         cout << "P";
-
-        if(next == '.')
+        if (next == '.')
         {
             addScore();
         }
@@ -96,14 +105,12 @@ void movePacmanDown()
         pacmanY = pacmanY + 1;
         gotoxy(pacmanX, pacmanY);
         cout << "P";
-
-        if(next == '.')
+        if (next == '.')
         {
             addScore();
         }
     }
 }
-
 void movePacmanRight()
 {
     char next = getCharAtxy(pacmanX + 1, pacmanY);
@@ -114,8 +121,7 @@ void movePacmanRight()
         pacmanX = pacmanX + 1;
         gotoxy(pacmanX, pacmanY);
         cout << "P";
-
-        if(next == '.')
+        if (next == '.')
         {
             addScore();
         }
@@ -131,14 +137,14 @@ void movePacmanLeft()
         pacmanX = pacmanX - 1;
         gotoxy(pacmanX, pacmanY);
         cout << "P";
-
-        if(next == '.')
+        if (next == '.')
         {
             addScore();
         }
     }
 }
 
+// Ememy Movement
 void moveGhostHorizontal()
 {
 
@@ -148,8 +154,8 @@ void moveGhostHorizontal()
         if (next == ' ' || next == '.')
         {
             gotoxy(ghostx, ghosty);
-            cout << previous;
-            previous = next;
+            cout << horizontalPrevious;
+            horizontalPrevious = next;
             ghostx = ghostx - 1;
             gotoxy(ghostx, ghosty);
             cout << "G";
@@ -166,8 +172,8 @@ void moveGhostHorizontal()
         if (next == ' ' || next == '.')
         {
             gotoxy(ghostx, ghosty);
-            cout << previous;
-            previous = next;
+            cout << horizontalPrevious;
+            horizontalPrevious = next;
             ghostx = ghostx + 1;
             gotoxy(ghostx, ghosty);
             cout << "G";
@@ -178,13 +184,70 @@ void moveGhostHorizontal()
         }
     }
 }
+
+void moveGhostRandom()
+{
+    int randomValue = rand() % 4;
+    if(randomValue == 0)        // 0 for moving Left
+    {
+        char next = getCharAtxy(randomGhostx - 1, randomGhosty);
+        if (next == ' ' || next == '.')
+        {
+            gotoxy(randomGhostx, randomGhosty);
+            cout << randomPrevious;
+            randomPrevious = next;
+            randomGhostx = randomGhostx - 1;
+            gotoxy(randomGhostx, randomGhosty);
+            cout << "R";
+        }
+    }
+    if(randomValue == 1)        // 1 for moving Right
+    {
+        char next = getCharAtxy(randomGhostx + 1, randomGhosty);
+        if (next == ' ' || next == '.')
+        {
+            gotoxy(randomGhostx, randomGhosty);
+            cout << randomPrevious;
+            randomPrevious = next;
+            randomGhostx = randomGhostx + 1;
+            gotoxy(randomGhostx, randomGhosty);
+            cout << "R";
+        }
+    }
+    if(randomValue == 2)        // 2 for moving Up
+    {
+        char next = getCharAtxy(randomGhostx, randomGhosty - 1);
+        if (next == ' ' || next == '.')
+        {
+            gotoxy(randomGhostx, randomGhosty);
+            cout << randomPrevious;
+            randomPrevious = next;
+            randomGhosty = randomGhosty - 1;
+            gotoxy(randomGhostx, randomGhosty);
+            cout << "R";
+        }
+    }
+    if(randomValue == 3)        // 2 for moving Down
+    {
+        char next = getCharAtxy(randomGhostx, randomGhosty + 1);
+        if (next == ' ' || next == '.')
+        {
+            gotoxy(randomGhostx, randomGhosty);
+            cout << randomPrevious;
+            randomPrevious = next;
+            randomGhosty = randomGhosty + 1;
+            gotoxy(randomGhostx, randomGhosty);
+            cout << "R";
+        }
+    }
+}
+
 void gotoxy(short x, short y)
 {
     HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
     COORD position = {x, y};
     SetConsoleCursorPosition(hStdout, position);
 }
-
 void printMaze()
 {
     cout << "%%%%%%%%%%%%%%%%%%%%" << endl;
@@ -198,7 +261,6 @@ void printMaze()
     cout << "%      .           %" << endl;
     cout << "%%%%%%%%%%%%%%%%%%%%" << endl;
 }
-
 char getCharAtxy(short int x, short int y)
 {
     CHAR_INFO ci;
@@ -209,40 +271,39 @@ char getCharAtxy(short int x, short int y)
     coordBufSize.Y = 1;
     return ReadConsoleOutput(GetStdHandle(STD_OUTPUT_HANDLE), &ci, coordBufSize, xy, &rect) ? ci.Char.AsciiChar : ' ';
 }
-
-
-void addScore()
-{
-    score++;
-}
-
 void printScore()
 {
     gotoxy(30, 5);
     cout << "Score: " << score;
 }
 
+// Reward and Punishments
+void addScore()
+{
+    score++;
+}
 
+// Collision Detection
 bool stopGameIfCollision()
 {
     char next;
     next = getCharAtxy(pacmanX + 1, pacmanY);
-    if(next == 'G')
+    if (next == 'G' || next == 'R')
     {
         return false;
     }
     next = getCharAtxy(pacmanX - 1, pacmanY);
-    if(next == 'G')
+    if (next == 'G' || next == 'R')
     {
         return false;
     }
     next = getCharAtxy(pacmanX, pacmanY + 1);
-    if(next == 'G')
+    if (next == 'G' || next == 'R')
     {
         return false;
     }
     next = getCharAtxy(pacmanX, pacmanY + 1);
-    if(next == 'G')
+    if (next == 'G' || next == 'R')
     {
         return false;
     }
