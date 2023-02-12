@@ -1,5 +1,6 @@
 #include <iostream>
 #include <windows.h>
+#include <cmath>
 
 using namespace std;
 
@@ -13,6 +14,10 @@ int pacmanY = 5;
 int randomGhostx = 2;
 int randomGhosty = 2;
 char randomPrevious = ' ';
+
+int smartGhostx = 8;
+int smartGhosty = 8;
+char smartPrevious = ' ';
 
 string ghostDirection = "Right";
 char horizontalPrevious = ' ';
@@ -28,9 +33,11 @@ void movePacmanUp();
 void movePacmanDown();
 void moveGhostHorizontal();
 void moveGhostRandom();
+void moveGhostSmart();
 void printMaze();
 void addScore();
 void printScore();
+float distance();
 bool stopGameIfCollision();
 void pacmanCollisionFoodPallet();
 
@@ -73,6 +80,7 @@ int main()
 
         moveGhostHorizontal();
         moveGhostRandom();
+        moveGhostSmart();
         Sleep(100);
     }
 }
@@ -144,7 +152,7 @@ void movePacmanLeft()
     }
 }
 
-// Ememy Movement
+            // Ememy Movement
 void moveGhostHorizontal()
 {
 
@@ -188,7 +196,7 @@ void moveGhostHorizontal()
 void moveGhostRandom()
 {
     int randomValue = rand() % 4;
-    if(randomValue == 0)        // 0 for moving Left
+    if (randomValue == 0) // 0 for moving Left
     {
         char next = getCharAtxy(randomGhostx - 1, randomGhosty);
         if (next == ' ' || next == '.')
@@ -201,7 +209,7 @@ void moveGhostRandom()
             cout << "R";
         }
     }
-    if(randomValue == 1)        // 1 for moving Right
+    if (randomValue == 1) // 1 for moving Right
     {
         char next = getCharAtxy(randomGhostx + 1, randomGhosty);
         if (next == ' ' || next == '.')
@@ -214,7 +222,7 @@ void moveGhostRandom()
             cout << "R";
         }
     }
-    if(randomValue == 2)        // 2 for moving Up
+    if (randomValue == 2) // 2 for moving Up
     {
         char next = getCharAtxy(randomGhostx, randomGhosty - 1);
         if (next == ' ' || next == '.')
@@ -227,7 +235,7 @@ void moveGhostRandom()
             cout << "R";
         }
     }
-    if(randomValue == 3)        // 2 for moving Down
+    if (randomValue == 3) // 2 for moving Down
     {
         char next = getCharAtxy(randomGhostx, randomGhosty + 1);
         if (next == ' ' || next == '.')
@@ -242,6 +250,72 @@ void moveGhostRandom()
     }
 }
 
+float distance(int gx, int gy)
+{
+    return sqrt(pow(pacmanX - gx, 2) + pow(pacmanY - gy, 2));
+}
+
+void moveGhostSmart()
+{
+    float left = distance(smartGhostx - 1, smartGhosty);
+    float right = distance(smartGhostx + 1, smartGhosty);
+    float up = distance(smartGhostx, smartGhosty - 1);
+    float down = distance(smartGhostx, smartGhosty + 1);
+    if (left <= down && left <= right && left <= up)
+    {
+        char next = getCharAtxy(smartGhostx - 1, smartGhosty);
+        if (next == ' ' || next == '.')
+        {
+            gotoxy(smartGhostx, smartGhosty);
+            cout << smartPrevious;
+            smartPrevious = next;
+            smartGhostx = smartGhostx - 1;
+            gotoxy(smartGhostx, smartGhosty);
+            cout << "S";
+        }
+    }
+    else if (right <= down && right <= left && right <= up)
+    {
+        char next = getCharAtxy(smartGhostx + 1, smartGhosty);
+        if (next == ' ' || next == '.')
+        {
+            gotoxy(smartGhostx, smartGhosty);
+            cout << smartPrevious;
+            smartPrevious = next;
+            smartGhostx = smartGhostx + 1;
+            gotoxy(smartGhostx, smartGhosty);
+            cout << "S";
+        }
+    }
+    else if (down <= left && down <= right && down <= up)
+    {
+        char next = getCharAtxy(smartGhostx, smartGhosty + 1);
+        if (next == ' ' || next == '.')
+        {
+            gotoxy(smartGhostx, smartGhosty);
+            cout << smartPrevious;
+            smartPrevious = next;
+            smartGhosty = smartGhosty + 1;
+            gotoxy(smartGhostx, smartGhosty);
+            cout << "S";
+        }
+    }
+    else
+    {
+        char next = getCharAtxy(smartGhostx, smartGhosty - 1);
+        if (next == ' ' || next == '.')
+        {
+            gotoxy(smartGhostx, smartGhosty);
+            cout << smartPrevious;
+            smartPrevious = next;
+            smartGhosty = smartGhosty - 1;
+            gotoxy(smartGhostx, smartGhosty);
+            cout << "S";
+        }
+    }
+}
+
+            // Helper Functions
 void gotoxy(short x, short y)
 {
     HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
